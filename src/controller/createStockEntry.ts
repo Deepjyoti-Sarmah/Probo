@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
 import { INR_BALANCES, ORDERBOOK, STOCK_BALANCE } from "..";
-
-const stockSymbolExists = (stockSymbol: string) => {
-    return ORDERBOOK.hasOwnProperty(stockSymbol)
-}
+import { symbolExists } from "../types";
 
 export const createStockEntry = async (req: Request, res: Response) => {
     const { stockSymbol } = req.params;
@@ -16,8 +13,7 @@ export const createStockEntry = async (req: Request, res: Response) => {
     }
 
     try {
-
-        if (stockSymbolExists(stockSymbol)) {
+        if (!symbolExists(stockSymbol)) {
             res.status(400).json({
                 success: false,
                 message: "Symbol already exists"
