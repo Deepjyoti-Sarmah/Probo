@@ -5,7 +5,7 @@ import { ORDERBOOK, STOCK_BALANCE } from "..";
 export const SellOrderForYes = async (req: Request, res: Response) => {
     const { userId, stockSymbol, quantity, price, stockType } = req.body;
 
-    if (!(userId || stockSymbol || quantity || price || stockType)) {
+    if (!(userId && stockSymbol && quantity && price && stockType)) {
         res.status(400).json({
             success: false,
             message: "Invalid Input"
@@ -34,6 +34,14 @@ export const SellOrderForYes = async (req: Request, res: Response) => {
             res.status(400).json({
                 success: false,
                 message: "Invalid stock type"
+            })
+            return
+        }
+
+        if (stockType !== "yes") {
+            res.status(400).json({
+                success: false,
+                message: "Stock type must be no"
             })
             return
         }

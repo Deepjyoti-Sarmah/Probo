@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { symbolExists, userExists } from "../types";
-import { INR_BALANCES, ORDERBOOK } from "..";
+import { INR_BALANCES, ORDERBOOK, STOCK_BALANCE } from "..";
 
 export const BuyOrderForYes = async (req: Request, res: Response) => {
 
     const { userId, stockSymbol, quantity, price, stockType } = req.body;
 
-    if (!(userId || stockSymbol || quantity || price || stockType)) {
+    if (!(userId && stockSymbol && quantity && price && stockType)) {
         res.status(400).json({
             success: false,
             message: "Input are not valid"
@@ -20,6 +20,7 @@ export const BuyOrderForYes = async (req: Request, res: Response) => {
                 success: false,
                 message: "user does not exits"
             })
+            return
         }
 
         if (!symbolExists(stockSymbol)) {
@@ -27,6 +28,7 @@ export const BuyOrderForYes = async (req: Request, res: Response) => {
                 success: false,
                 message: "stock symbol does not exits"
             })
+            return
         }
 
         if (!["yes", "no"].includes(stockType)) {
@@ -34,6 +36,15 @@ export const BuyOrderForYes = async (req: Request, res: Response) => {
                 success: false,
                 message: "stock type does not exists"
             })
+            return
+        }
+
+        if (stockType !== "yes") {
+            res.status(400).json({
+                success: false,
+                message: "Stock type must be yes"
+            })
+            return
         }
 
         const totalCost = quantity * price;
@@ -58,6 +69,8 @@ export const BuyOrderForYes = async (req: Request, res: Response) => {
 
         ORDERBOOK[stockSymbol][stockType][price].total += quantity;
         ORDERBOOK[stockSymbol][stockType][price].orders[userId] = (ORDERBOOK[stockSymbol][stockType][price].orders[userId] || 0) + quantity;
+
+        STOCK_BALANCE[userId][stockSymbol][stockType].quantity += quantity
 
         res.status(200).json({
             success: true,
