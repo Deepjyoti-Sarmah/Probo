@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getOrderbook } from "../../../controller/getOrderbook";
-import { getOrderbookById } from "../../../controller/getOrderbookById";
+import { getOrderbook } from "../../../controller/orderBooks/getOrderbook";
+import { getOrderbookById } from "../../../controller/orderBooks/getOrderbookById";
 
 export const orderBookRouter = Router();
 

@@ -1,30 +1,38 @@
 import { Request, Response } from "express";
-import { INR_BALANCES } from "../..";
+import { getJsonStringifyData, handlePubSubWithTimeout, sendResponse } from "../../utils";
+import { client } from "../../redis";
 
 export const getBalnce = async (req: Request, res: Response) => {
-  try {
-    const balance = INR_BALANCES;
 
-    if (!balance) {
-      res.status(400).json({
-        success: false,
-        message: "Balance not found"
-      })
-      return
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Balance received",
-      data: balance
-    });
-
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    })
-    return
+  const inrBalanceObject = {
+    type: "getInrBalance",
+    requestType: "balance"
   }
 
+  try {
+    //    const balance = INR_BALANCES;
+
+    //    if (!balance) {
+    //     res.status(400).json({
+    //        success: false,
+    //        message: "Balance not found"
+    //      })
+    //      return
+    //    }
+
+    //    res.status(200).json({
+    //      success: true,
+    //      message: "Balance received",
+    //      data: balance
+    //    });
+
+    const pubSub = handlePubSubWithTimeout("balance", 5000);
+    await client.lPush("taskQueue", getJsonStringifyData(inrBalanceObject));
+    const response = await pubSub;
+    sendResponse(res, response);
+  } catch (error: any) {
+    res.status(500).json({
+      error: error.message || "Error in pubsub communication"
+    })
+  }
 }

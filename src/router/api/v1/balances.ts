@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { getBalnce } from "../../../controller/balances/getBalance";
-import { getBalanceStock } from "../../../controller/balances/getBalanceStock";
 import { getUserInrBalance } from "../../../controller/balances/getUserInrBalance";
 import { getUserStockBalance } from "../../../controller/balances/getUserStockBalance";
+import { getStockBalance } from "../../../controller/balances/getBalanceStock";
 
 export const balanceRouter = Router();
 
 balanceRouter.get("/inr", getBalnce)
 
-balanceRouter.get("/stock", getBalanceStock)
+balanceRouter.get("/stock", getStockBalance)
 
 balanceRouter.get("/inr/:userId", getUserInrBalance)
 

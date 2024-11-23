@@ -1,27 +1,24 @@
 import { Request, Response } from "express";
 import { INR_BALANCES, ORDERBOOK, STOCK_BALANCE } from "..";
+import { getJsonStringifyData, handlePubSubWithTimeout, sendResponse } from "../utils";
+import { client } from "../redis";
 
 export const resetValues = async (req: Request, res: Response) => {
-    try {
-        Object.keys(INR_BALANCES).forEach(key => delete INR_BALANCES[key]);
-        Object.keys(ORDERBOOK).forEach(key => delete ORDERBOOK[key]);
-        Object.keys(STOCK_BALANCE).forEach(key => delete STOCK_BALANCE[key]);
 
-        res.status(200).json({
-            success: true,
-            message: "all data has been reset",
-            data: {
-                INR_BALANCES,
-                ORDERBOOK,
-                STOCK_BALANCE
-            }
-        });
+  const resetObject = {
+    type: "reset",
+    requestType: "reset"
+  }
 
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server error"
-        });
-    }
+  try {
+    const pubSub = handlePubSubWithTimeout("reset", 5000);
+    await client.lPush("taskQueue", getJsonStringifyData(resetObject));
+    const response = await pubSub;
+    sendResponse(res, response);
+  } catch (error: any) {
+    res.status(500).json({
+      error: error.message || "Error in pub/sub communication"
+    });
+  }
 
 }

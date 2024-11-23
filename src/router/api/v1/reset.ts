@@ -3,4 +3,4 @@ import { resetValues } from "../../../controller/resetValues";
 
 export const resetRouter = Router();
 
-resetRouter.post("/", resetValues);
+resetRouter.post("", resetValues);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { STOCK_BALANCE } from "..";
 
-export const getStockBalance = async (req: Request, res: Response) => {
+export const getStockBalancesssss = async (req: Request, res: Response) => {
   const stocks = STOCK_BALANCE;
 
   if (!stocks) {
