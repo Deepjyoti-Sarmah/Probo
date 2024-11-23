@@ -3,7 +3,6 @@ import { getJsonStringifyData, handlePubSubWithTimeout, sendResponse } from "../
 import { client } from "../../redis";
 
 export const BuyOrder = async (req: Request, res: Response) => {
-
   const { userId, stockSymbol, quantity, price, stockType } = req.body;
   const actualPrice = price / 100;
 
