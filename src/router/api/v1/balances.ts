@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getBalnce } from "../../../controller/getBalance";
-import { getUserInrBalance } from "../../../controller/getUserInrBalance";
-import { getUserStockBalance } from "../../../controller/getUserStockBalance";
-import { getBalanceStock } from "../../../controller/getBalanceStock";
+import { getBalnce } from "../../../controller/balances/getBalance";
+import { getBalanceStock } from "../../../controller/balances/getBalanceStock";
+import { getUserInrBalance } from "../../../controller/balances/getUserInrBalance";
+import { getUserStockBalance } from "../../../controller/balances/getUserStockBalance";
 
 export const balanceRouter = Router();
 
