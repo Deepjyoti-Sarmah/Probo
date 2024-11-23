@@ -20,5 +20,4 @@ export const resetValues = async (req: Request, res: Response) => {
       error: error.message || "Error in pub/sub communication"
     });
   }
-
 }

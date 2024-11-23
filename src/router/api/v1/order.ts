@@ -1,15 +1,9 @@
 import { Router } from "express";
-import { BuyOrderForYes } from "../../../controller/BuyOrderForYes";
-import { SellOrderForYes } from "../../../controller/SellOrderForYes";
-import { BuyOrderForNo } from "../../../controller/BuyOrderForNo";
-import { SellOrderForNo } from "../../../controller/SellOrderForNo";
-
+import { BuyOrder } from "../../../controller/orders/BuyOrder";
+import { SellOrder } from "../../../controller/orders/SellOrder";
 export const orderRouter = Router();
 
-orderRouter.post("/buy", BuyOrderForYes);
+orderRouter.post("/buy", BuyOrder);
 
-orderRouter.post("/sell", SellOrderForYes);
+orderRouter.post("/sell", SellOrder);
 
-orderRouter.post("/buy", BuyOrderForNo);
-
-orderRouter.post("/sell", SellOrderForNo);
