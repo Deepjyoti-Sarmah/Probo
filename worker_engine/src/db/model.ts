@@ -40,8 +40,9 @@ interface StockPosition {
 }
 
 interface StockType {
-  "yes"?: StockPosition;
-  "no"?: StockPosition;
+  [key: string]: StockPosition;
+  "yes": StockPosition;
+  "no": StockPosition;
 }
 
 interface UserStockBalance {
