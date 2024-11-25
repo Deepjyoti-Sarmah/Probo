@@ -5,7 +5,7 @@ import { client } from "../../redis";
 export const getUserStockBalance = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const stockBalanceObject = {
-    type: "getStockBalance",
+    type: "getUserStockBalance",
     requestType: "balance",
     userId
   }

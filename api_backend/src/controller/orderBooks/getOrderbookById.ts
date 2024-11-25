@@ -6,8 +6,8 @@ import { client } from "../../redis";
 export const getOrderbookById = async (req: Request, res: Response) => {
   const symbol = req.params.stockSymbol;
   const orderbookObject = {
-    type: "orderBook",
-    requestType: "stockSymbol",
+    type: "orderBookBySymbol",
+    requestType: "orderBook",
     symbol
   }
   try {
