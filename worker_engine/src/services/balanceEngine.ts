@@ -2,7 +2,6 @@ import { INR_BALANCES, STOCK_BALANCES } from "../db/model";
 
 export const doBalance = async (data: any) => {
   const { type, userId } = JSON.parse(data);
-  const user = INR_BALANCES[userId];
 
   switch (type) {
     case "getBalance":
@@ -33,5 +32,4 @@ export const doBalance = async (data: any) => {
       }
       return { error: false, msg: userResponse }
   }
-
 }

@@ -1,7 +1,6 @@
 import { STOCK_BALANCES } from "../db/model";
 
 export const doMint = async (data: any) => {
-
   const { userId, stockSymbol, quantity } = JSON.parse(data);
   const stock = STOCK_BALANCES[userId][stockSymbol];
 

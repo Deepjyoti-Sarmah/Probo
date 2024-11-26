@@ -10,10 +10,6 @@ app.use(cors());
 
 const port = process.env.PORT || 8080;
 
-export const INR_BALANCES: any = {};
-export const ORDERBOOK: any = {};
-export const STOCK_BALANCE: any = {}
-
 app.use("/api/v1", router);
 
 app.listen(port, () => {
