@@ -3,7 +3,7 @@ import { lockFunds } from "../utils/lockFunction";
 import { validateFunds, validateUserExists } from "../utils/validateFunction";
 import { processBuyOrder } from "./processBuyOrder";
 
-export const buyOption = async (userId: string, quantity: number, price: number, stockSymbol: string, stockType: "yes" | "no") => {
+export const buyOrder = async (userId: string, quantity: number, price: number, stockSymbol: string, stockType: "yes" | "no") => {
 
   const toalCost = price * 100 * quantity;
 

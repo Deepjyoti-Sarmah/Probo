@@ -1,4 +1,4 @@
-import { buyOption } from "../controllers/buyOrder";
+import { buyOrder } from "../controllers/buyOrder";
 import { sellOrder } from "../controllers/sellOrder";
 
 export const doOrder = async (data: any) => {
@@ -8,7 +8,7 @@ export const doOrder = async (data: any) => {
 
   switch (type) {
     case "buyOrderOption":
-      const buyResponse = await buyOption(userId, quantity, price, stockType, stockSymbol);
+      const buyResponse = await buyOrder(userId, quantity, price, stockType, stockSymbol);
       if (!buyResponse) {
         return ({
           error: true,
