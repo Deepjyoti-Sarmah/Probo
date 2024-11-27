@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { INR_BALANCES } from "../..";
-import { userExists } from "../../types";
 import { getJsonStringifyData, handlePubSubWithTimeout, sendResponse } from "../../utils";
 import { client } from "../../redis";
 
