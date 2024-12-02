@@ -5,12 +5,12 @@ import { client } from "../../redis.js";
 
 export const createMarket = async (c: Context) => {
   const parseData = MarketSchema.safeParse(c.req.json())
-  if (!parseData) {
+  if (!parseData.success) {
     return c.json({ message: "Invalid inputs" }, { status: 400 })
   }
 
   try {
-    const { symbol, description, endTime, sourceOfTruth, categoryTitle } = parseData;
+    const { symbol, description, endTime, sourceOfTruth, categoryTitle } = parseData.data;
 
     const createMarketObject = {
       type: "createMarket",
@@ -27,7 +27,6 @@ export const createMarket = async (c: Context) => {
     await client.lPush(TaskQueue, getJsonStringifyData(createMarketObject))
     sendResponse(c, response)
   } catch (error) {
-
+    return c.json({ message: "Error while creating Markert Place" }, { status: 500 })
   }
-
 }

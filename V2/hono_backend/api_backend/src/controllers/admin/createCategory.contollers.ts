@@ -3,14 +3,14 @@ import { CategorySchema } from "../../schemas/index.schemas.js"
 import { client } from "../../redis.js"
 import { getJsonStringifyData, handlePubSubWithTimeout, sendResponse, TaskQueue, TimeOutMs } from "../../utils/index.utils.js"
 
-export const createCatagory = async (c: Context) => {
-  const parseData = CategorySchema.parse(c.req.json())
-  if (!parseData) {
+export const createCategory = async (c: Context) => {
+  const parseData = CategorySchema.safeParse(c.req.json())
+  if (!parseData.success) {
     return c.json({ message: "Invalid inputs" }, { status: 400 })
   }
 
   try {
-    const { title, icon, description } = parseData
+    const { title, icon, description } = parseData.data
 
     const createObject = {
       type: "createCatagory",
