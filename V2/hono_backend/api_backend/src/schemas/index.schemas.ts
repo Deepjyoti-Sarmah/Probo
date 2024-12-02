@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { symbol, z } from "zod";
 
 export const SignupSchema = z.object({
   username: z.string().min(1, "username is required"),
@@ -17,6 +17,15 @@ export const OrderSchema = z.object({
   quantity: z.number().gt(0, "Quantity must be greater than 0"),
   price: z.number().gt(0, "Price must be greater than 0"),
   stockType: z.enum(["Yes", "No"]),
+});
+
+export const CancleOrderSchema = z.object({
+  orderId: z.string().min(1, "OrderId is required"),
+  marketSymbol: z.string().min(1, "Market Symbol is required")
+});
+
+export const OnRampInrSchema = z.object({
+  amount: z.number().gt(0, "amount must be greater than 0")
 });
 
 export const CategorySchema = z.object({

@@ -43,9 +43,9 @@ export const checkUserAuth = async (c: Context, next: Next) => {
       userId: string
     }
 
-    // if (decoded.role != "User") {
-    //   return c.json({ status: 403, message: "Unauthorized" })
-    // }
+    if (decoded.role != "User") {
+      return c.json({ status: 403, message: "Unauthorized" })
+    }
 
     c.set("userId", decoded.userId)
     await next()
