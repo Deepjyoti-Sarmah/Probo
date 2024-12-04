@@ -25,7 +25,5 @@ func startEngine() {
 			fmt.Println("Error while stringifying: ", err)
 		}
 		pubsub.Publish(redis.Rdb, "pubsub", m)
-
 	}
-
 }
