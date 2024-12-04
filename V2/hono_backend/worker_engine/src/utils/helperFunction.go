@@ -24,9 +24,6 @@ func StringifyPubSubMessage(message model.MessageToPubSub) (string, error) {
 	return string(stringifiedMessage), nil
 }
 
-// func Redirection(message model.MessageFromQueue) (info model.MessageToPubSub) {
-//   switch message.Type {
-//   case "createCatagory":
-//   }
-//
-// }
+func Redirection(message model.MessageFromQueue) (info model.MessageToPubSub) {
+	return info
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"worker_engine/src/pubsub"
 	"worker_engine/src/redis"
 	"worker_engine/src/utils"
 )
