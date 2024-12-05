@@ -22,6 +22,7 @@ export const checkAdminAuth = async (c: Context, next: Next) => {
     }
 
     c.set("userId", decoded.userId)
+    c.set("role", decoded.role)
     await next()
   } catch (error) {
     throw new Error("Invalid token! You are not authorized");
@@ -48,6 +49,7 @@ export const checkUserAuth = async (c: Context, next: Next) => {
     }
 
     c.set("userId", decoded.userId)
+    c.set("role", decoded.role)
     await next()
   } catch (error) {
     throw new Error("Invalid token! You are not authorized");
