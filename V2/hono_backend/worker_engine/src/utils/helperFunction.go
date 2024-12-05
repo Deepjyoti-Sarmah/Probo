@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"worker_engine/src/controllers"
 	"worker_engine/src/model"
 )
 
@@ -25,5 +26,13 @@ func StringifyPubSubMessage(message model.MessageToPubSub) (string, error) {
 }
 
 func Redirection(message model.MessageFromQueue) (info model.MessageToPubSub) {
-	return info
+	processedMessage, err := controllers.ProcessRequest(message)
+	if err != nil {
+		return model.MessageToPubSub{
+			Type:       message.Type,
+			StatusCode: 400,
+			Payload:    nil,
+		}
+	}
+	return processedMessage
 }
