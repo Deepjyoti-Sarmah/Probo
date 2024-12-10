@@ -4,6 +4,7 @@ import (
 	"errors"
 	"worker_engine/src/model"
 
+	"github.com/golang-migrate/migrate/database"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -70,9 +71,57 @@ func HandleSignUp(request model.MessageFromQueue) (model.MessageToPubSub, error)
 }
 
 func HandleLogin(request model.MessageFromQueue) (model.MessageToPubSub, error) {
+
+	payload, ok := request.Payload.(map[string]interface{})
+	if !ok {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "login",
+			Payload:    map[string]string{"error": "Invalid payload"},
+		}, errors.New("Invalid payload")
+	}
+
+	email, _ := payload["email"].(string)
+	password, _ := payload["password"].(string)
+
+	if email == "" || password == "" {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "login",
+			Payload:    map[string]string{"error": "Missing required fields"},
+		}, errors.New("missing required fields")
+	}
+
+	var user *model.User
+	var err error
+
+	user, err = database.FindUserByEmail(email)
+	if err != nil || user == nil {
+		return model.MessageToPubSub{
+			StatusCode: 404,
+			Type:       "login",
+			Payload:    map[string]string{"error": "User not found"},
+		}, errors.New("User not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return model.MessageToPubSub{
+			StatusCode: 401,
+			Type:       "login",
+			Payload:    map[string]string{"error": "Invalid credentials"},
+		}, errors.New("Invalid credentials")
+	}
+
 	return model.MessageToPubSub{
 		StatusCode: 200,
 		Type:       "login",
-		Payload:    nil,
+		Payload: map[string]interface{}{
+			"success":  true,
+			"userId":   user.ID,
+			"username": user.Username,
+			"email":    user.Email,
+			"role":     user.Role,
+		},
 	}, nil
 }
