@@ -14,20 +14,23 @@ func ProcessRequest(request model.MessageFromQueue) (model.MessageToPubSub, erro
 	case "login":
 		return services.HandleLogin(request)
 
+	case "logout":
+		return services.HandleLogout(request)
+
 	// case "get_all_markets":
 	// 	return services.HandleAllMarket(request)
 	//
 	// case "get_all_categories":
 	// 	return services.HandleGetAllCategories(request)
 
-	case "getMarket":
-		return services.HandleGetMarket(request)
+	// case "getMarket":
+	// 	return services.HandleGetMarket(request)
 
 	case "createMarket":
 		return services.HandleCreateMarket(request)
 
-	case "createCategory":
-		return services.HandleGetCategories(request)
+	// case "createCategory":
+	// 	return services.HandleGetCategories(request)
 
 	case "onrampInr":
 		return services.HandleOnrampInr(request)
