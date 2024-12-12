@@ -234,7 +234,43 @@ func HandleBuyOrder(request model.MessageFromQueue) (model.MessageToPubSub, erro
 		}, errors.New("missing or invalid quantity")
 	}
 
-  stockType, ok := 
+	price, ok := payload["price"].(float64)
+	if !ok {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "buy",
+			Payload:    map[string]string{"error": "Missing or invalid price"},
+		}, errors.New("missing or invalid price")
+	}
+
+	stockType, ok := payload["stockType"].(string)
+	if !ok {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "buy",
+			Payload:    map[string]string{"error": "Missing or invalid stock type"},
+		}, errors.New("missing or invalid stock type")
+	}
+
+	side := model.Side(stockType)
+	if side != model.NO && side != model.YES {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "buy",
+			Payload:    map[string]string{"error": "Missing or invalid stock type"},
+		}, errors.New("missing or invalid stock type")
+	}
+
+	buyOrder := model.Order{
+		ID:           uuid.New().String(),
+		MarketSymbol: symbol,
+		Side:         side,
+		Quantity:     int32(quantity),
+		RemainingQty: int32(quantity),
+		Price:        float32(price),
+		Status:       model.PENDING,
+		TimeStamp:    time.Now(),
+	}
 
 	return model.MessageToPubSub{
 		StatusCode: 200,
