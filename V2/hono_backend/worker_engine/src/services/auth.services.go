@@ -125,3 +125,54 @@ func HandleLogin(request model.MessageFromQueue) (model.MessageToPubSub, error) 
 		},
 	}, nil
 }
+
+func HandleLogout(request model.MessageFromQueue) (model.MessageToPubSub, error) {
+	//Parse the payload
+	payload, ok := request.Payload.(map[string]interface{})
+	if !ok {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "logout",
+			Payload:    map[string]string{"error": "Invalid payload"},
+		}, errors.New("Invalid payload")
+	}
+
+	// Extract user ID from payload
+	userId, ok := payload["userId"].(string)
+	if !ok || userId == "" {
+		return model.MessageToPubSub{
+			StatusCode: 400,
+			Type:       "logout",
+			Payload:    map[string]string{"error": "Missing user ID"},
+		}, errors.New("missing user ID")
+	}
+
+	//verify user exists
+	user, err := database.FindUserById(userId)
+	if err != nil || user == nil {
+		return model.MessageToPubSub{
+			StatusCode: 404,
+			Type:       "logout",
+			Payload:    map[string]string{"error": "User not found"},
+		}, errors.New("user not found")
+	}
+
+	err = database.InvalidateUserTokens(userId)
+	if err != nil {
+		return model.MessageToPubSub{
+			StatusCode: 500,
+			Type:       "logout",
+			Payload:    map[string]string{"error": "Failed to logout"},
+		}, errors.New("failed to logout")
+	}
+
+	return model.MessageToPubSub{
+		StatusCode: 200,
+		Type:       "logout",
+		Payload: map[string]interface{}{
+			"success": true,
+			"userId":  user.ID,
+			"message": "Logged out successfully",
+		},
+	}, nil
+}
