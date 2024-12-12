@@ -1,10 +1,10 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 
-const app = new Hono()
+const app = new Hono().basePath("/api/v1")
 
 app.get('/', (c) => {
-  return c.text('Hello Hono!')
+  return c.text('Server is running')
 })
 
 const port = 3000
