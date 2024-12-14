@@ -1,10 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
-import { symbol, z } from 'zod'
+import { z } from 'zod'
 import { Hono, type Context } from "hono";
 import { authMiddleware } from "../../middlewares/auth.middlewares.js";
 import { client } from "../../redis.js";
 import { handlePubSubWithTimeout, sendResponse, stringifyJsonData, TaskQueue, TimeoutMs } from "../../utils/helper.utils.js";
-import { type } from "os";
 
 const adminRoute = new Hono().basePath("/create")
   .use(authMiddleware)
@@ -37,7 +36,7 @@ const adminRoute = new Hono().basePath("/create")
         }
 
         await client.lPush(TaskQueue, stringifyJsonData(categoryObject))
-        const response = await handlePubSubWithTimeout("create_category", TimeoutMs)
+        const response = await handlePubSubWithTimeout(categoryObject.type, TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
         return c.json({ message: "Error creating category" }, 500)
@@ -55,7 +54,6 @@ const adminRoute = new Hono().basePath("/create")
       })
     ),
     async (c: Context) => {
-
       const { symbol, description, categoryTitle, endTime, sourceOfTruth } = await c.req.json()
       const { userId } = c.get("userId")
       const { role } = c.get("role")
@@ -79,7 +77,7 @@ const adminRoute = new Hono().basePath("/create")
         }
 
         await client.lPush(TaskQueue, stringifyJsonData(marketObject))
-        const response = await handlePubSubWithTimeout("create_market", TimeoutMs)
+        const response = await handlePubSubWithTimeout(marketObject.type, TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
         return c.json({ message: "Error creating market" }, 500)
@@ -95,7 +93,6 @@ const adminRoute = new Hono().basePath("/create")
       })
     ),
     async (c: Context) => {
-
       const { symbol, quantity, price } = await c.req.json()
       const { userId } = c.get("userId")
       const { role } = c.get("role")
@@ -117,7 +114,7 @@ const adminRoute = new Hono().basePath("/create")
         }
 
         await client.lPush(TaskQueue, stringifyJsonData(mintObject))
-        const response = await handlePubSubWithTimeout("create_mint", TimeoutMs)
+        const response = await handlePubSubWithTimeout(mintObject.type, TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
         return c.json({ message: "Error creating mint" }, 500)
