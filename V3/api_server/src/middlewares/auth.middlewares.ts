@@ -4,7 +4,7 @@ import env from "../utils/env.js";
 
 interface UserPayload {
   userId: string;
-  role: string;
+  role: "Admin" | "User";
 }
 
 export const authMiddleware = async (c: Context, next: Next) => {
