@@ -3,6 +3,11 @@ import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
 import { handlePubSubWithTimeout, sendResponse, stringifyJsonData, TaskQueue, TimeoutMs } from "../../utils/helper.utils.js";
 import { client } from "../../redis.js";
+import { authMiddleware } from "../../middlewares/auth.middlewares.js";
+
+type LoginResponse = {
+  token?: string
+}
 
 const authRoute = new Hono()
   .post("/register",
@@ -28,8 +33,8 @@ const authRoute = new Hono()
           type: "register"
         }
 
-        const response = await handlePubSubWithTimeout("register", TimeoutMs)
         await client.lPush(TaskQueue, stringifyJsonData(registerObject))
+        const response = await handlePubSubWithTimeout("register", TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
         return c.json({ message: "Error registering users" }, 500)
@@ -55,17 +60,19 @@ const authRoute = new Hono()
           type: "login"
         }
 
-        const response = await handlePubSubWithTimeout("login", TimeoutMs)
         await client.lPush(TaskQueue, stringifyJsonData(loginObject))
+        const response = await handlePubSubWithTimeout("login", TimeoutMs) as LoginResponse
+
+        const token = response.token;
+        c.header("Authorization", `Bearer ${token}`)
         sendResponse(c, response)
-
-
       } catch (error) {
         return c.json({ message: "Error logging error" }, 500)
       }
     }
   )
   .post("/logout",
+    authMiddleware,
     zValidator("json",
       z.object({
         userId: z.string()
@@ -82,8 +89,8 @@ const authRoute = new Hono()
           type: "logout"
         }
 
-        const response = await handlePubSubWithTimeout("logout", TimeoutMs)
         await client.lPush(TaskQueue, stringifyJsonData(logoutObject))
+        const response = await handlePubSubWithTimeout("logout", TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
         return c.json({ message: "Error logging out user" }, 500)
