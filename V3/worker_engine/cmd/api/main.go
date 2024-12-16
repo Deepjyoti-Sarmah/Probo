@@ -9,7 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"test-test/internal/server"
+	"github.com/Deepjyoti-Sarmah/worker-engine/internal/redis"
+	"github.com/Deepjyoti-Sarmah/worker-engine/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -38,15 +39,21 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 
-	server := server.NewServer()
+	redisClient, err := redis.NewClient()
+	if err != nil {
+		log.Fatalf("Failed to create Redis client: %v", err)
+	}
+	defer redisClient.Close()
+
+	apiServer := server.NewServer()
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
 
 	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+	go gracefulShutdown(apiServer, done)
 
-	err := server.ListenAndServe()
+	err = apiServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}
