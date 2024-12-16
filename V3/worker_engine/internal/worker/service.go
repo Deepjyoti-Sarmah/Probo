@@ -14,7 +14,8 @@ type TaskType string
 const (
 	TaskRegistet       TaskType = "register"
 	TaskLogin          TaskType = "login"
-	TaskCreateCategory TaskType = "logout"
+	TaskLogout         TaskType = "logout"
+	TaskCreateCategory TaskType = "create_category"
 	TaskCreateMarket   TaskType = "create_market"
 	TaskCreateMint     TaskType = "create_mint"
 	TaskOnrampAmount   TaskType = "create_amount"
@@ -56,6 +57,7 @@ func (s *Service) ProcessTasks(ctx context.Context) {
 				continue
 			}
 
+			// The first element is the queue name, second is the task data
 			taskData := result[1]
 
 			if err := s.processTask(ctx, taskData); err != nil {
@@ -76,9 +78,30 @@ func (s *Service) processTask(ctx context.Context, taskData string) error {
 	switch task.Type {
 	case TaskRegistet:
 		return s.handleUserRegistration(ctx, task.Payload)
-	}
+	case TaskLogin:
+		return s.handleUserLogin(ctx, task.Payload)
+	case TaskLogout:
+		return s.handleUserLogout(ctx, task.Payload)
+	case TaskCreateCategory:
+		return s.handleCreateCategory(ctx, task.Payload)
+	case TaskCreateMarket:
+		return s.handleCreateMarket(ctx, task.Payload)
+	case TaskCreateMint:
+		return s.handleCreateMint(ctx, task.Payload)
+	case TaskOnrampAmount:
+		return s.handleOnrampAmount(ctx, task.Payload)
+	case TaskBuyStocks:
+		return s.handleBuyStocks(ctx, task.Payload)
+	case TaskSellStocks:
+		return s.handleSellStocks(ctx, task.Payload)
+	case TaskCancelBuy:
+		return s.handleCancelBuyOrder(ctx, task.Payload)
+	case TaskCancelSell:
+		return s.handleCancelSellOrder(ctx, task.Payload)
 
-	return nil
+	default:
+		return fmt.Errorf("unknown task type: %s", task.Type)
+	}
 }
 
 func (s *Service) publishResponse(ctx context.Context, channel string, response interface{}) error {
