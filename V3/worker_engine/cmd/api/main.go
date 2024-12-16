@@ -11,6 +11,7 @@ import (
 
 	"github.com/Deepjyoti-Sarmah/worker-engine/internal/redis"
 	"github.com/Deepjyoti-Sarmah/worker-engine/internal/server"
+	"github.com/Deepjyoti-Sarmah/worker-engine/internal/worker"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -46,6 +47,15 @@ func main() {
 	defer redisClient.Close()
 
 	apiServer := server.NewServer()
+
+	workerService := worker.NewService(redisClient, "taskQueue")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		workerService.ProcessTasks(ctx)
+	}()
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
