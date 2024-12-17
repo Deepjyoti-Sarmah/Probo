@@ -102,7 +102,6 @@ const adminRoute = new Hono().basePath("/create")
       }
 
       try {
-
         const mintObject = {
           payload: {
             userId,
