@@ -8,6 +8,7 @@ import (
 func (s *Service) handleUserRegistration(ctx context.Context, payload map[string]interface{}) error {
 	username, _ := payload["username"].(string)
 	email, _ := payload["email"].(string)
+	password, _ := payload["password"].(string)
 	role, _ := payload["role"].(string)
 
 	response := map[string]interface{}{
@@ -16,6 +17,7 @@ func (s *Service) handleUserRegistration(ctx context.Context, payload map[string
 		"userId":  "random",
 		username:  username,
 		email:     email,
+		password:  password,
 		role:      role,
 	}
 
