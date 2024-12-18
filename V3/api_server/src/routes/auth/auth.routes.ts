@@ -1,7 +1,7 @@
 import { Hono, type Context } from "hono";
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator'
-import { handlePubSubWithTimeout, sendResponse, stringifyJsonData, TaskQueue, TimeoutMs } from "../../utils/helper.utils.js";
+import { AuthQueue, handlePubSubWithTimeout, sendResponse, stringifyJsonData, TaskQueue, TimeoutMs } from "../../utils/helper.utils.js";
 import { client } from "../../redis.js";
 import { authMiddleware } from "../../middlewares/auth.middlewares.js";
 
@@ -33,7 +33,7 @@ const authRoute = new Hono()
           type: "register"
         }
 
-        await client.lPush(TaskQueue, stringifyJsonData(registerObject))
+        await client.lPush(AuthQueue, stringifyJsonData(registerObject))
         const response = await handlePubSubWithTimeout("register", TimeoutMs)
         sendResponse(c, response)
       } catch (error) {
@@ -60,7 +60,7 @@ const authRoute = new Hono()
           type: "login"
         }
 
-        await client.lPush(TaskQueue, stringifyJsonData(loginObject))
+        await client.lPush(AuthQueue, stringifyJsonData(loginObject))
         const response = await handlePubSubWithTimeout("login", TimeoutMs) as LoginResponse
 
         const token = response.token;
@@ -89,7 +89,7 @@ const authRoute = new Hono()
           type: "logout"
         }
 
-        await client.lPush(TaskQueue, stringifyJsonData(logoutObject))
+        await client.lPush(AuthQueue, stringifyJsonData(logoutObject))
         const response = await handlePubSubWithTimeout("logout", TimeoutMs)
         sendResponse(c, response)
       } catch (error) {

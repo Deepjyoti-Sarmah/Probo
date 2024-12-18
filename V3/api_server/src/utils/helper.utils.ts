@@ -35,3 +35,4 @@ export const sendResponse = (c: Context, payload: any) => {
 
 export const TimeoutMs: number = 5000;
 export const TaskQueue: string = "taskQueue";
+export const AuthQueue: string = "authQueue";
