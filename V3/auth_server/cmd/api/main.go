@@ -9,9 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Deepjyoti-Sarmah/worker-engine/internal/redis"
-	"github.com/Deepjyoti-Sarmah/worker-engine/internal/server"
-	"github.com/Deepjyoti-Sarmah/worker-engine/internal/worker"
+	"auth_server/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -40,24 +38,15 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 
-	apiServer := server.NewServer()
+	server := server.NewServer()
 
-	// workerService := worker.NewService(redisClient, "taskQueue")
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// go func() {
-	// 	workerService.ProcessTasks(ctx)
-	// }()
-	//
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
 
 	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(apiServer, done)
+	go gracefulShutdown(server, done)
 
-	err = apiServer.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}

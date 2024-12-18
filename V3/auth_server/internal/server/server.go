@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Deepjyoti-Sarmah/worker-engine/internal/redis"
+	"github.com/Deepjyoti-Sarmah/auth-engine/internal/redis"
 	_ "github.com/joho/godotenv/autoload"
 )
 
