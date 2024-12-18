@@ -19,6 +19,11 @@ func (s *Service) handleUserRegistration(ctx context.Context, payload map[string
 		return fmt.Errorf("failed to hash passord: %w", err)
 	}
 
+	_, err = s.server.DB().ExecContext(ctx, "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)", username, email, hashedPassword, role)
+	if err != nil {
+		return fmt.Errorf("failed to save user: %w", err)
+	}
+
 	token, err := auth.GenerateToken(username, role)
 	if err != nil {
 		return fmt.Errorf("failed to generate token: %w", err)
@@ -30,8 +35,6 @@ func (s *Service) handleUserRegistration(ctx context.Context, payload map[string
 			"email":    email,
 			"role":     role,
 			"token":    token,
-			//TODO: remove this
-			"password": hashedPassword,
 		},
 	}
 
