@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"auth_server/internal/server"
+	"github.com/Deepjyoti-Sarmah/auth-engine/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {

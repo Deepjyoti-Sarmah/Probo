@@ -30,8 +30,6 @@ func NewServer() *http.Server {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
 
-	workerSvc := worker.NewService(redisClient, "authQueue")
-
 	db, err := database.New(
 		os.Getenv("DATABASE_URL"),
 		10,
@@ -41,6 +39,8 @@ func NewServer() *http.Server {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+
+	workerSvc := worker.NewService(redisClient, "authQueue", db)
 
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	NewServer := &Server{

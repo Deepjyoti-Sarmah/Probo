@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -25,12 +26,14 @@ type TaskPayload struct {
 type Service struct {
 	redisClient *redis.Client
 	taskQueue   string
+	db          *sql.DB
 }
 
-func NewService(client *redis.Client, taskQueue string) *Service {
+func NewService(client *redis.Client, taskQueue string, db *sql.DB) *Service {
 	return &Service{
 		redisClient: client,
 		taskQueue:   taskQueue,
+		db:          db,
 	}
 }
 
