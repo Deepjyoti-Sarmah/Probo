@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,13 +10,17 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Deepjyoti-Sarmah/worker-engine/internal/database"
 	"github.com/Deepjyoti-Sarmah/worker-engine/internal/redis"
+	"github.com/Deepjyoti-Sarmah/worker-engine/internal/worker"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 type Server struct {
 	port        int
 	redisClient *redis.Client
+	workerSvc   *worker.Service
+	db          *sql.DB
 }
 
 func NewServer() *http.Server {
@@ -24,11 +30,31 @@ func NewServer() *http.Server {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 	}
 
+	db, err := database.New(
+		os.Getenv("DATABASE_URL"),
+		10,
+		5,
+		"5m",
+	)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	workerSvc := worker.NewService(redisClient, "taskQueue", db)
+
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	NewServer := &Server{
 		port:        port,
 		redisClient: redisClient,
+		workerSvc:   workerSvc,
+		db:          db,
 	}
+
+	go func() {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		workerSvc.ProcessTasks(ctx)
+	}()
 
 	// Declare Server config
 	server := &http.Server{

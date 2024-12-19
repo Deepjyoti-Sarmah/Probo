@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,9 +13,6 @@ import (
 type TaskType string
 
 const (
-	TaskRegistet       TaskType = "register"
-	TaskLogin          TaskType = "login"
-	TaskLogout         TaskType = "logout"
 	TaskCreateCategory TaskType = "create_category"
 	TaskCreateMarket   TaskType = "create_market"
 	TaskCreateMint     TaskType = "create_mint"
@@ -33,12 +31,14 @@ type TaskPayload struct {
 type Service struct {
 	redisClient *redis.Client
 	taskQueue   string
+	db          *sql.DB
 }
 
-func NewService(client *redis.Client, taskQueue string) *Service {
+func NewService(client *redis.Client, taskQueue string, db *sql.DB) *Service {
 	return &Service{
 		redisClient: client,
 		taskQueue:   taskQueue,
+		db:          db,
 	}
 }
 
@@ -59,7 +59,6 @@ func (s *Service) ProcessTasks(ctx context.Context) {
 
 			// The first element is the queue name, second is the task data
 			taskData := result[1]
-
 			if err := s.processTask(ctx, taskData); err != nil {
 				log.Printf("Task processing error:%v", err)
 			}
@@ -76,12 +75,6 @@ func (s *Service) processTask(ctx context.Context, taskData string) error {
 	log.Printf("Processing task: %s", task.Type)
 
 	switch task.Type {
-	case TaskRegistet:
-		return s.handleUserRegistration(ctx, task.Payload)
-	case TaskLogin:
-		return s.handleUserLogin(ctx, task.Payload)
-	case TaskLogout:
-		return s.handleUserLogout(ctx, task.Payload)
 	case TaskCreateCategory:
 		return s.handleCreateCategory(ctx, task.Payload)
 	case TaskCreateMarket:
